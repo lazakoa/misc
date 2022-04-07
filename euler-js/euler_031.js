@@ -13,6 +13,9 @@ It is possible to make -L-2 in the following way:
 How many different ways can -L-2 be made using any number of coins?
 */
 
+// I'm pretty sure this is solvable with generating functions & sage. In
+// fact it becomes trivial.
+
 // tree never breaks a depth of 200, stack is safe
 // this is very slow :(
 
@@ -23,7 +26,7 @@ How many different ways can -L-2 be made using any number of coins?
 // countChange(200) (but no 100 & 200 piece)
 
 // this didn't work, counts every possibility, duplicated are treated as unique
-// too bad it was really pretty
+// too bad it was really pretty & fast
 /*
 function countChange(x) {
     const coins = [1, 2, 5, 10, 20, 50];
@@ -52,25 +55,39 @@ function countChange(x) {
 }
 */
 
+var lo = require('lodash');
+
 function countChange(x) {
     const coins = [1, 2, 5, 10, 20, 50, 100, 200];
-    var maxCoins = [200, 100, 40, 20, 10, 4, 2, 1];
+    const mCoins = {1:200, 2:100, 5:40, 10:20, 20:10, 50:4, 100:2, 200:1};
 
-    recur(howmany) {
-        var sum = scalar(howmany, coins);
-        if (sum > x) {
-            return 0;
-        }
-        else if (sum === x) {
+    function recur(coinCounts, indice) {
+        // coinCounts is an array that represents 
+        var totalChange = scalar(coinCounts, coins);
+
+        if (totalChange === x) {
             return 1;
         }
-        else { 
-            for (var counter = 0; counter < coins.length;) {
+        else if (totalChange > x) {
+            return 0;
+        }
+        else if (indice === coins.length) {
+            // first if will have gotten indice = 8 & total is x
+            return 0;
+        }
+        else {
+            var sum = 0;
+            var current = coins[indice];
+            for (var counter = 0; counter < mCoins[current] + 1; counter++) {
+                var temp = coinCounts.slice();
+                temp[indice] = counter;
+                sum = sum + recur(temp, indice + 1);
             }
+            return sum;
         }
     }
     
-    return recur([0,0,0,0, 0,0,0,0]);
+    return recur([0,0,0,0, 0,0,0,0], 0);
 }
 
 function scalar(array1, array2) {
@@ -82,15 +99,13 @@ function scalar(array1, array2) {
     return lo.reduce(temp, (a, b) => { return a + b; });
 }
 
-// lock coin# 1 in place -> 
-// lock coin# 2 in place ->
-// lock coin# 3 in place ->
-// lock coin# 4 in place ->
-// ...
-// lock coin# 8 in place ->
-// check if sum matches what we want
-
-// need to count the number of unique arrangements [a1*1, a2*2, ... ] 
-// where the sum of the array is equal to 200
+// I'm on a roll, worked on the first try after beating out the syntax errors
+// kinda slow, does a little extra work on some of the tree branches.
+// maybe? i can stick a condition in the for loop to break out of it if the
+// scalar product total has hit past x. Would the work saved by the condition
+// check having been done each time be worth the gain? I shave of cycles off
+// my for loop inside the recurrence at the cost of more for loops inside a
+// check with scalar.
 
 console.log(countChange(200));
+

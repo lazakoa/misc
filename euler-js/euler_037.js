@@ -65,8 +65,11 @@ function euler37() {
            return false;
        }
    })).filter(isTruncatblePrime);
+
    var ans = 0;
-   for (var p of wu(res).take(12)) {
+
+   // woops, had 12 there after i finished the question to test memory usage
+   for (var p of wu(res).take(11)) {
        ans += p;
    }
    return ans;

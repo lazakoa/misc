@@ -48,7 +48,8 @@ function countSolutions(p) {
 // this can be made much faster, i don't need to generate the 
 // combination over and over, just do it once for the max val of p  and 
 // reuse it in find max, count solutions is seperate as an artifact of how I 
-// did this. it works so I don't care for now.
+// did this. it works so I don't care for now. Ugh slow, took like 7 seconds
+// to verify (was checking which ones i already did again)
 
 function findMax(p) {
 
