@@ -88,6 +88,6 @@ function aEb() {
     return pairings.size;
 }
 
-// Yay! worked on first attemp.
+// Yay! worked on first attemp. Obviously there is a simpler way to do this.
 console.log(aEb())
 

@@ -17,9 +17,8 @@ Some potential sources of problems in the future:
 5. 99 Prolog Problems & derivatives
 
 Looking for:
-* problem sets & challenges designed for multiple cores
 * problem sets & challenges for neural nets
 
 Sources will be added as I find them.
 
-I write things in a very terse manner. The general format is as follows write as many abstract utilities as possible then use them to solve the question in a couple of lines.
+I write things in a very terse manner sometimes. A lot of the stuff in here is terribly inefficient.
