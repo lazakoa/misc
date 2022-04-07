@@ -15,6 +15,7 @@ Some potential sources of problems in the future:
 3. Cryptopals
 4. 30 Days of Elixir
 5. 99 Prolog Problems & derivatives
+6. https://challenges.re/
 
 Looking for:
 * problem sets & challenges for neural nets
