@@ -66,7 +66,3 @@ ans = reduce(lambda x,y: x if x[0] < y[0] else y,
 print(ans[1][0] * ans[1][1])
 
 
-
-
-
-

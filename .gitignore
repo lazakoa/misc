@@ -1,6 +1,8 @@
 
 /euler-js/node_modules
 /euler-js/package-lock.json
+/euler-js/resources
 euler-py/resources/*
 euler-py/__pycache__
+
 

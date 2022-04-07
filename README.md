@@ -16,6 +16,9 @@ Some potential sources of problems in the future:
 4. 30 Days of Elixir
 5. 99 Prolog Problems & derivatives
 6. https://challenges.re/
+7. Flare-On
+8. http://eudyptula-challenge.org/
+9. https://microcorruption.com
 
 Looking for:
 * problem sets & challenges for neural nets
