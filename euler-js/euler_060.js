@@ -43,7 +43,8 @@ concatenate to produce another prime.
  * 1. Can't be solved by brute force easily (possible, not recommended)
  * 2. Doing a tree search to generate all possible 5 prime solutions is not
  * feasible even for a low number of primes to search over. Also it is not 
- * known when convergence will occur.
+ * known when convergence will occur. Set of primes is picked manually, (all
+ * I need is an upper bound).
  *
  * Idea:
  * Let the set P be all primes less than or equal to some n. Where n is chosen
@@ -52,76 +53,21 @@ concatenate to produce another prime.
  * (pi1,pj1) --> .... -> (pik,pjk) is remarkable when only the unique pi's and
  * pj's are considered.
  *
+ * Steps:
+ * 1. Generate a set of primes, with a upperbound p. (p is user configurable)
+ * 2. Generate all pair wise combinations from the above set of primes.
+ * 3. Filter out all pairs that are not remarkable.
+ * 4. From the filtered pairs make a hash map where the keys are primes
+ * and the value associated with each is a set of primes that form remarkable
+ * pairs with the key.
+ * 5. Do a tree search to find all possible solutions of length k (k is
+ * a configurable parameter).
+ * 6. If there are no answers set p to be higher and run this again. 
+ * 
+ * If the above doesn't work then give up and think up a new approach.
  */
 
 var pri = require('primality');
 var lo = require('lodash');
 
-function concat(p1, p2) {
-    var t1 = String(p1) + String(p2);
-    var t2 = String(p2) + String(p1);
-    if (Number(t1) in primes && Number(t2) in primes) {
-        return true;
-    } else if (Number(t1) in primes) {
-        var b2 = pri.primality(Number(t2));
-        if (b2) {
-            primes.add(Number(t2))
-            return true ;
-        } else {
-            return false;
-        }
-    } else if (Number(t2) in primes) {
-        var b1 = pri.primality(Number(t1));
-        if (b1) {
-            primes.add(Number(t1));
-        }
-    } else {
-        var b1 = pri.primality(Number(t1));
-        var b2 = pri.primality(Number(t2));
-        if (b1) {
-            primes.add(Number(t1));
-        }
-        if (b2) {
-            primes.add(Number(t2))
-        }
-        return pri.primality(Number(t1)) && pri.primality(Number(t2));
-    }
-}
-
-//var base = [11, 113, 1217, 75659, 70816763]; // 70 million
-//var base = [3, 7, 109, 673, 129976621]; // 130 million
-
-
-function check(i) {
-    for (var b of base) {
-        if (!(concat(b,i))) {
-            return false;
-        }
-    }
-    return true;
-}
-
-var primes = new Set(lo.filter(lo.range(10**8), pri.primality));
-
-function solve() {
-    var start = 24;
-    console.time(2);
-    for (var i = start;; i++) {
-        if (0 === i % 10**8) {
-            console.timeEnd(2);
-        }
-        if (i in primes) { 
-            if (check(i)) {
-                return i;
-            }
-        } else if (pri.primality(i)) {
-            if (check(i)) {
-                return i;
-            }
-        }
-    }
-}
-
-//console.log(lo.sum(base));
-console.log(solve());
 
