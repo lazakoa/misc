@@ -30,19 +30,6 @@ heptagonal, and octagonal, is represented by a different number in the
 set.
 """
 
-"""
-    * 6 cyclic 4-digit numbers. Where each polygonal type is represented by
-    a DIFFERENT number in the set.
-        * Generate a cache for all classes of polygonal numbers, where the
-        cache goes up to 10k.
-    * Generate all 6 cycle chains
-    * Make boolean function that checks for the property of having every
-    element in the 6-cycle represent a different class (covering all 6 classes)
-    * Find the smallest cache out of my 6 classes. Generate all cyclic chains
-    for every element in that class. Pipe all results into our verification
-    function, wait for it to converge.
-"""
-
 from functools import reduce
 from itertools import permutations
 
@@ -60,32 +47,66 @@ def polygonal(x):
             return n*((1 + ((x-4) // 2))*n - ((x-4) // 2))
         else:
             return n*((x-2)*n + (1 - (x-3))) // 2
-
     return f
 
 cache = {i: set(filter(lambda x: len(str(x)) == 4, filter(lambda x: x < 10000,
     mkcache(10000, polygonal(i))))) for i in range(3, 9)}
 
+def mkdict(polyclass):
+    """
+    Extracts the first two digits of every element in the class, converts it
+    to a string and uses it as a key, the values are lists of numbers that
+    have the first two digits as the key.
+    """
+    temp = dict()
+    for elem in polyclass:
+        temp.setdefault(str(elem)[0:2], []).append(elem)
+    return temp
+
+chaincache = [[mkdict(cache[i]), cache[i]] for i in cache]
+
 """
-    * From every class in the cache generate a dict where the first two digits
-    of each number map to a set of numbers that have these two digits.
-    * Make a function s.t
-        * function takes a number from the class of octagonal numbers below 10k
-        * function also tak
-        
+    Search over a tree
+        * The tree has a depth of 6
+            * Each layer in the tree has 
+
 """
 
-orderings = set(permutations((3,4,5,6,7)))
+def cyclic_chain():
+    # correct idea, but needs to be run across 120 different permutations of
+    # how classes can be arranged
 
-def cyclicChain(n):
-    solutions = []
-    def recur(n, order, sol):
-        if len(order) == 0:
-            solution.append(sol)
-        pass
-    map(lambda x: recur(n, x, tuple()), orderings)
+    def recur(t, l):
+        if len(t) == 6 and str(t[-1])[-2:] == str(t[0])[0:2]:
+            # base case
+            return t
+        elif len(t) == 6:
+            # other base case, hits here
+            return t[:-1] 
+        elif len(t) == 0:
+            # initialize, hits here
+            for elem in chaincache[0][1]:
+                temp = recur(t + (elem,), l)
+                if len(temp) == 6:
+                    # if you find one with len 6 break out
+                    return temp
+        else:
+            index = len(t)
+            last2 = lastTofirst(t[-1])
+            try:
+                elems = l[index - 1][0][last2]
+                temp = t
+                for elem in elems:
+                    temp = recur(t + (elem,), l)
+                    if len(temp) == 6:
+                        return temp
+            except KeyError:
+                # can't chain, break back up
+                return t[:-1]
+            return t[:-1]
 
-    return solutions
+    return list(filter(lambda x: x != None
+        , map(lambda x: recur(tuple(), x), permutations(chaincache[1:]))))[0]
 
-    
-
+# fugly solution, not proud of it
+print(sum(cyclic_chain()))
