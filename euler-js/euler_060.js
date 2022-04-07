@@ -12,26 +12,33 @@ Find the lowest sum for a set of five primes for which any two primes
 concatenate to produce another prime.
 */
 
-/* The property that you need to satisfy is that given 5 primes, take any two
- * and concatenate them in any order the resulting number is still al prime.
- *
- * Find the lowest sum for a set of five primes that satisfy this propery.
- * 
- * If any of 5 concatenate into primes, then any of four concatenate into 
- * primes. 792 is the lowest sum works for 4. Check all primes > 673 until
- * condition is satisfied.
- */
-
 /* No way you can check all the combinations.
- * 1. Use [3, 7, 109, 673] as a base solution.
- * 2. Try to find a prime p s.t p > 673 for which the property is satisifed
- * for every element in the base solution.
  *
- * Lets call the number we are looking for n.
- * 3-n and n-3 both are prime
- * 7-n and n-7 both are prime
- * 109-n and n-109 both are prime
- * 673-n and n-673 both are prime
+ * Define concat(a,b) to be a function that returns a tuple s.t the first
+ * element of the tuple is the digits of b appened to the end of the digits
+ * of a, and vice versa for the second element of the tuple.
+ *
+ * concat(a,b) is equivalent to a*(10**(digits(b))) + b and 
+ * b*(10**(digits(a))) + a.
+ *
+ * Definition of remarkable:
+ * A set of primes called P is said to be remarkable if for every pi,pj s.t
+ * pi != pj and where every element in the tuple concat(pi,pj) is prime. If 
+ * there are n primes in the set P then there are combination(n,2) possible 
+ * pairs pi, pj s.t pi != pj.
+ *
+ * Take pi, pj from the set P s.t pi != pj. If concat(pi,pj) then 
+ * digits(concat(pi,pj)) = digits(pi) + digits(pj).
+ *
+ * Assume that the set P is drawn from a set P' s.t P' consists of all primes
+ * p < b for some positive natural number b. combination(Ord(P'), Ord(P)) 
+ * gives an upper bound on the total number of sets P that are possible.
+ *
+ * There are 168 primes s.t p < 1000.
+ * There are 1229 primes s.t p < 10000.
+ *
+ * The sum of five primes that satisfy this property is less than or equal
+ * to ~70million.
  */
 
 var pri = require('primality');
@@ -40,10 +47,37 @@ var lo = require('lodash');
 function concat(p1, p2) {
     var t1 = String(p1) + String(p2);
     var t2 = String(p2) + String(p1);
-    return pri.primality(Number(t1)) && pri.primality(Number(t2));
+    if (Number(t1) in primes && Number(t2) in primes) {
+        return true;
+    } else if (Number(t1) in primes) {
+        var b2 = pri.primality(Number(t2));
+        if (b2) {
+            primes.add(Number(t2))
+            return true ;
+        } else {
+            return false;
+        }
+    } else if (Number(t2) in primes) {
+        var b1 = pri.primality(Number(t1));
+        if (b1) {
+            primes.add(Number(t1));
+        }
+    } else {
+        var b1 = pri.primality(Number(t1));
+        var b2 = pri.primality(Number(t2));
+        if (b1) {
+            primes.add(Number(t1));
+        }
+        if (b2) {
+            primes.add(Number(t2))
+        }
+        return pri.primality(Number(t1)) && pri.primality(Number(t2));
+    }
 }
 
-var base = [20887, 7, 109, 673];
+//var base = [11, 113, 1217, 75659, 70816763]; // 70 million
+//var base = [3, 7, 109, 673, 129976621]; // 130 million
+
 
 function check(i) {
     for (var b of base) {
@@ -54,12 +88,20 @@ function check(i) {
     return true;
 }
 
-var primes = new Set();
+var primes = new Set(lo.filter(lo.range(10**8), pri.primality));
 
 function solve() {
-    var start = 4;
+    var start = 24;
+    console.time(2);
     for (var i = start;; i++) {
-        if (pri.primality(i)) {
+        if (0 === i % 10**8) {
+            console.timeEnd(2);
+        }
+        if (i in primes) { 
+            if (check(i)) {
+                return i;
+            }
+        } else if (pri.primality(i)) {
             if (check(i)) {
                 return i;
             }
@@ -67,5 +109,6 @@ function solve() {
     }
 }
 
+//console.log(lo.sum(base));
 console.log(solve());
 
