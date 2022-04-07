@@ -22,4 +22,4 @@ Looking for:
 
 Sources will be added as I find them.
 
-PS: I write things in a very terse manner. The general format is as follows write as many abstract utilities as possible then use them to solve the question in a couple of lines.
+I write things in a very terse manner. The general format is as follows write as many abstract utilities as possible then use them to solve the question in a couple of lines.
