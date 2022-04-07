@@ -44,6 +44,7 @@ function transpose(grid) {
 
 function stuff() {
     // keeps stuffing things into other things as long as space is available
+    return null;
 }
 
 /*
@@ -71,23 +72,68 @@ function addBorder(matrix, n, unit) {
                                                            temp[0].length)]);
 }
 
+/*
+ * 1x1 -> 3x3 -> 5x5 -> 7x7 -> 9x9
+ *      21 22 23 24 25
+ *      20  7  8  9 10
+ *      19  6  1  2 11
+ *      18  5  4  3 12
+ *      17 16 15 14 13
+ *   
+ *      (25 9 1 5 17) (21 7 1 3 13)
+ * every number nxn +
+ *
+ * (1)*2 + 4 numbers + 4 numbers + 4 numbers
+ *
+ * top right corner: 
+ * n^2 
+ *
+ * top left corner:
+ * n^2 -   (n - 1)
+ *
+ * bottom left corner:
+ * n^2 - 2*(n - 1)
+ *
+ * bottom right corner:
+ * n^2 - 3*(n - 1)
+ *
+ * find sum of diagonals in both directions.
+ */
+
+function diagonalSum(n) {
+    if (n === 1) {
+        return 2;
+    }
+    else {
+        var temp = (4 * (n * n)) - (6 * (n - 1));
+        return temp + diagonalSum(n - 2);
+    }
+}
+
+// I didn't need all that other crap i wrote. I realized exactly how much extra
+// work would have been needed using a random walk + iterators. 
+console.log(diagonalSum(1001) - 1);
+
+/*
 function clone(elem, n) {
     var temp = [];
     for (var counter = 0; counter < n; counter++)
         temp.push(elem);
     return temp;
 }
+*/
 
+/*
 function makeSpiralMatrix(n) {
 
-    /* makes a nxn matrix that spirals in the clockwise direcition as so:
-     *
-     *                        21 22 23 24 25
-     *                        20  7  8  9 10
-     *                        19  6  1  2 11
-     *                        18  5  4  3 12
-     *                        17 16 15 14 13
-     */
+    // makes a nxn matrix that spirals in the clockwise direcition as so:
+    //
+    //                        21 22 23 24 25
+    //                        20  7  8  9 10
+    //                        19  6  1  2 11
+    //                        18  5  4  3 12
+    //                        17 16 15 14 13
+    //
     function recur(matrix, counter, iterator) {
         if (counter === n) {
             return matrix;
@@ -99,3 +145,5 @@ function makeSpiralMatrix(n) {
     return recur([[1]], counter + 1
     
 }
+*/
+

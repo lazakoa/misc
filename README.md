@@ -1,5 +1,5 @@
 
-A small collection of snippets of code in different languages. Sourced from problem sets, books, random places on the internet. Most of this was done for fun & to quickly learn/memorize a new language.
+A small collection of snippets in different languages. Sourced from problem sets, books, and random places on the internet. Most of this was done for fun & to quickly learn/memorize a new language.
 
 The project euler problems that were not done in python were done/checked with easyeuler, the python project euler problems were checked with EulerPy.
 
@@ -22,4 +22,4 @@ Looking for:
 
 Sources will be added as I find them.
 
-PS: I write things in a very terse manner. The general format is as follows write as many abstract utilities as possible then use them to solve the question in a couple of lines; this is almost always the goal for me. It's slow going at first but stuff very quickly becomes reusable. Sometimes I just like to exercise the language features too.
+PS: I write things in a very terse manner. The general format is as follows write as many abstract utilities as possible then use them to solve the question in a couple of lines.
