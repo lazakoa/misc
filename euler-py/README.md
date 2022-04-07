@@ -3,7 +3,7 @@ Everything here was done with the aid of EulerPy.
 
 Some libraries to try out in the future. The solutions aren't meant to be efficient.
 
-functional libaries;
+functional libaries:
 
 * fn
 * cytoolz
@@ -12,6 +12,6 @@ functional libaries;
 * itertools
 * functools
 
-useful libaries;
+useful libraries:
 
 * collections
