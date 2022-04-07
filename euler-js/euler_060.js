@@ -39,6 +39,19 @@ concatenate to produce another prime.
  *
  * The sum of five primes that satisfy this property is less than or equal
  * to ~70million.
+ *
+ * 1. Can't be solved by brute force easily (possible, not recommended)
+ * 2. Doing a tree search to generate all possible 5 prime solutions is not
+ * feasible even for a low number of primes to search over. Also it is not 
+ * known when convergence will occur.
+ *
+ * Idea:
+ * Let the set P be all primes less than or equal to some n. Where n is chosen
+ * arbitrarily. Generate all pairs pi,pj E P s.t pi != pj. Filter out all the
+ * pairs pi,pj that are not remarkable. *Somehow* chain together k pairs s.t
+ * (pi1,pj1) --> .... -> (pik,pjk) is remarkable when only the unique pi's and
+ * pj's are considered.
+ *
  */
 
 var pri = require('primality');

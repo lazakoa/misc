@@ -37,54 +37,53 @@ cipher1.txt
 var fs = require('fs');
 var lo = require('lodash');
 var G = require('generatorics');
+//var prompt = require('prompt-sync');
+var query = require('cli-interact').getYesNo;
 
 // Reading in the data.
 var path = 'resources/cipher1.txt';
 var cipher = fs.readFileSync(path, 'utf8');
 cipher = lo.map(cipher.slice(0,-2).split(','), Number);
 
-common = ['the', 'and']
-
 function decrypt(cipher, key) {
     var temp = []; 
     var counter = 0;
     for (var code of cipher) {
         temp.push(code ^ key[counter]);
-        counter = (counter + 1) % 3;
+        counter = (counter + 1) % key.length;
     }
     return temp;
 }
 
-/* Letter frequencies
- * 12,000	E	2,500	F
-    9,000	T	2,000	W, Y
-    8,000	A, I, N, O, S	1,700	G, P
-    6,400	H	1,600	B
-    6,200	R	1,200	V
-    4,400	D	800	K
-    4,000	L	500	Q
-    3,400	U	400	J, X
-    3,000	C, M	200	Z 
- */
-
 function search(cipher) {
     // approx 2 million possible keys
-    var keys = G.permutation(lo.range(0,128), 3);
+    var keys = G.permutation(lo.range(97,123), 3);
+    var partial = cipher.slice(0,78);
     for (var key of keys) {
-        // 2 million keys * decrpytion time for 1 run
-        var temp = decrypt(cipher, key);
-        if (key[0] > 10) {
-            console.log(key);
-        }
-        // This is expensive + 1000 function calls & search
-        var temp2 = lo.map(temp, String.fromCharCode).join('').toLowerCase();
-        if (temp2.search(common[0]) !== -1) {
-            console.log(temp2);
-        }
-        
+        var temp = decrypt(partial, key);
+        temp = lo.map(temp, (x) =>
+                String.fromCharCode(x)[0]).join('');
+        console.log(temp, key);
     }
+    return temp;
 }
 
-search(cipher);
+function undoASCII(cipher, key) {
+    var temp = decrypt(cipher, key);
+    var total = lo.sum(temp);
+        temp = lo.map(temp, (x) =>
+                String.fromCharCode(x)[0]).join('');
+    //console.log(temp); // wanted to read the text :)
+    return total;
+}
 
+// password from the procedure below
+var pass = [103, 111, 100]
 
+/* generated a text file and searched by visual inspection for common phrases.
+ * Grep for 'the' and 'and'.
+ */
+//search(cipher);
+//
+
+console.log(undoASCII(cipher, pass));
