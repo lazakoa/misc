@@ -31,4 +31,51 @@ to form 16- and 17-digit strings. What is the maximum 16-digit string for
 a "magic" 5-gon ring?
 """
 
+"""
+    * Generate all permutations of 1 to 10
+    * 
+
+"""
+
+from itertools import permutations
+
+def verify(gon):
+    """ First n points are the spokes, next n points are the points on
+        the n-gon.
+    """
+
+    spokes = gon[:len(gon) // 2]
+    ngon =  gon[len(gon) // 2:]
+    n = len(ngon)
+
+    sums = set() 
+    for i in range(n):
+        sums.add(spokes[i] + ngon[i] + ngon[(i + 1) % n])
+    if len(sums) != 1:
+        return False
+    else:
+        return True
+
+def unroll(gon):
+    """ Unrolls an ngon """
+    spokes = gon[:len(gon) // 2]
+    ngon = gon[len(gon) // 2:]
+    n = len(ngon)
+    unrolled = []
+    for i in range(n):
+        unrolled += [spokes[i], ngon[i], ngon[(i+1) % n]]
+    return unrolled
+
+sols = list(map(unroll, filter(verify, 
+        filter(lambda x: x[0] == min(x[0:len(x) // 2]), 
+            permutations(range(1,11))))))
+
+print(str(max(list(filter(lambda x: len(str(x)) == 16, 
+    map(lambda x: int(''.join(map(str, x))), sols))))))
+
+
+
+
+
+
 
