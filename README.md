@@ -1,6 +1,6 @@
 
 A small collection of snippets of code in different languages. Sourced from
-problem sets, books, random places on the internet.
+problem sets, books, random places on the internet. 
 
 The Project Euler problems were done/checked with easyeuler.
 
