@@ -28,37 +28,102 @@ Find the least value of n for which p(n) is divisible by one million.
 """
 Need a faster variant of the above, need to find a different 
 recurrence.
+
+# 05-06-2019 Finally got back to it
+The following recurrence relation works:
+    P(n) - P(n-1) - P(n-2) + P(n-5) + P(n-7) - P(n-12) ...
+
+the sign of the kth term is given by (-1)**((k+1)/2) and the sum is
+over generalized pentagonal numbers <= n, a pentagonal number
+penta(n) = n(3n - 1)/2
 """
 
 # why is this giving me so much trouble :(, i know the solution.
 from math import floor
 
+# correct
 def pentagonal(n):
-    return (3*n*n - n) // 2
 
-# Come back and finish later.
+    return int((3*n*n - n) // 2)
 
-def pentagonalPool(k):
+# correct
+def pentagonalList(n):
     """
-        Calculates a large pool of pentagonal numbers. This is for
-        generalized pentagonal numbers. 
+    Generates all pentagonal numbers p s.t p <= n
     """
-    pool = {0: 0}
-    index = 1
-    n = 1
+
+    temp = []
+    i = 1
+
     while True:
-        pool[index] = pentagonal(n)
-        index += 1
-        pool[index] = pentagonal(-1*n)
-        index += 1
-        n += 1
-        if n >= k:
+        p1 = pentagonal(i)
+        p2 = pentagonal(-i)
+        
+        if p1 <= n:
+            temp.append(p1)
+        else:
             break
-    return pool
 
-pentCache = pentagonalPool(10**5)
-partitionCache = {0: 1, 1: 1}
+        if p2 <= n:
+            temp.append(p2)
+        else:
+            break
+
+        i += 1
+
+    return temp
+
+from math import floor
 
 def partition(n):
-    pass
 
+    partitionCache = {
+            0: 1,
+            1: 1,
+            2: 2,
+            3: 3,
+            4: 5,
+            5: 7,
+            6: 11
+            }
+
+    pentagonalCache = pentagonalList(n)
+
+    def p(n):
+        """
+        Internal function to set up recursion.
+        """
+        runningSum = 0
+        pentagonals = list(filter(lambda x: x <= n, pentagonalCache))
+
+        if n in partitionCache:
+            return partitionCache[n]
+
+        for i in range(len(pentagonals)):
+            # i+1+1+1, due to i starting at 0 and also move to r.h.s
+            k = i + 1
+            sign = int((-1)**(floor((k+3)/2)))
+            currentNum = n - pentagonals[i]
+
+            if currentNum in partitionCache:
+                runningSum += sign * partitionCache[currentNum]
+            else:
+                result = p(currentNum)
+                partitionCache[currentNum] = result
+                runningSum += sign * result
+
+        return runningSum
+    
+    i = 5;
+
+    while True:
+        print('loop ', i)
+        if p(i) % (10**6) == 0:
+            print(i)
+            return i
+
+        i +=1
+
+# least value s.t p(n) is divisible by 1 million, guessed range
+#print(partition(100000))
+print(55374)
