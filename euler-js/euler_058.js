@@ -26,4 +26,32 @@ along both diagonals first falls below 10%?
 
 /* 1. Have a function that calculates the 4 numbers on the diagonal path given
  * an n. Same concept as one of the earlier problems (20 something I think).
+ * 
  */
+
+var num = require('numbers');
+var lo = require('lodash');
+
+function diagonal(n) {
+    /* n > 1,
+     * 1, 9, 25, 49 ...
+     */
+    var temp = n*n;
+    return [temp, temp - (n - 1), temp - 2*(n - 1), temp - 3*(n - 1)];
+}
+
+function spiralPrimes(ratio) {
+    var total = 1;
+    var primes = 0;
+    var temp = [];
+    for (var i = 3;; i += 2) {
+        var temp = diagonal(i);
+        primes += lo.filter(temp, num.prime.simple).length;
+        total += 4;
+        if ((primes/total) < ratio) {
+            return  i;
+        }
+    }
+}
+
+console.log(spiralPrimes(.1));

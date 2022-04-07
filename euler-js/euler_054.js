@@ -121,19 +121,62 @@ cardValues = {  2  :  2 ,
                 'A':  14}
 
 function score(hand) {
-    // poor man's quasi bit array
-    var total = 0;
-    for (var card of hand) {
-        total += 10**(cardValues[card[0]]);
+    /* The default lexicographic sort fucked me up initially. I'm not happy
+     * with how this turned out.
+     */
+    var temp1 = count(hand);
+    var temp2 = invert(temp1);
+    var final = [];
+    var iter = lo.map(Object.keys(temp2), Number).sort().reverse();
+    for (var multi of iter) {
+        var stage = [];
+        for (var counter = 0; counter < multi; counter++) {
+            stage = stage.concat(lo.map(temp2[multi], 
+                Number));
+        }
+        final = final.concat(stage.sort((a, b) => a - b).reverse());
     }
-    return total;
+    return final;
 }
+
+// I don't like it, but for 5 card hands this is pretty cheap.
+function invert(obj) {
+    var temp = {};
+    for (var key in obj) {
+        if (obj[key] in temp) {
+            temp[obj[key]].push(key);
+        } else {
+            temp[obj[key]] = [key];
+        }
+    }
+    return temp;
+}
+
+function count(hand) {
+    var temp = {};
+    for (var card of hand) {
+        if (cardValues[card[0]] in temp) {
+            temp[cardValues[card[0]]] += 1;
+        }
+        if (!(cardValues[card[0]] in temp)) {
+            temp[cardValues[card[0]]] = 1;
+        }
+    }
+    return temp;
+}
+
+/*
+ * Need a array where occurences are counted as a,a,a,b,b,c but if a and b
+ * occur the same number of times it a and b need to be sorted highest to 
+ * lowest
+ */
 
 function nkind(array) {
     function f(hand) {
-        total = String(score(hand)).split('');
+        var counts = invert(count(hand));
+        var totals = Object.keys(counts);
         for (var digit of array) {
-            if (!(total.includes(String(digit)))) {
+            if (!(totals.includes(String(digit)))) {
                 return false;
             }
         }
@@ -192,7 +235,7 @@ function straight(hand){
     for (var card of hand) {
         values.push(cardValues[card[0]]);
     }
-    values.sort();
+    values = values.sort((a, b) => a - b);
     start = values[0] - 1;
     for (var value of values) {
         start += 1;
@@ -232,12 +275,15 @@ function rankhand(hand) {
         }});
 }
 
-function compareScore(s1, s2) {
-    indices = lo.map(String(s1).split(''), Number);
-    indices.reverse();
-    for (var indice of indices) {
-
+function cscore(s1, s2) {
+    for (var i in s1) {
+        if (s1[i] > s2[i]) {
+            return 1;
+        } else if (s2[i] > s1[i]) {
+            return 2;
+        }
     }
+    return 3;
 }
 
 function comparehand(h1, h2) {
@@ -245,21 +291,29 @@ function comparehand(h1, h2) {
     var r2 = rankhand(h2);
     // 3 outcomes, 'p1', 'p2', 'draw'
     for (var i in r1) {
-        if (r1[i] > r2[i]) {
-            return 'p1';
-        }
-        else if (r1[i] < r2[i]) {
-            return 'p2';
-        }
-        else {
-            if (r2[i] !== 0 && r1[i] !== 0) {
+        if (r1[i] !== 0 && r2[i] !== 0) {
+            var winner = cscore(r1[i], r2[i]);
+            if (winner === 1) {
+                return 'p1';
+            }
+            else if (winner === 2) {
+                return 'p2';
+            }
+            else {
                 return 'draw';
             }
+        } else if (r1[i] !== 0) {
+            return 'p1';
+        } else if (r2[i] !== 0) {
+            return 'p2';
+        } else {
+            continue;
         }
     }
 }
 
 winners = lo.map(hands, x => {
-    return comparehand(x.slice(0,5), x.slice(5,));});
+    return [x, comparehand(x.slice(0,5), x.slice(5,))];});
 
-console.log(winners.filter( (x) => {return x === 'p1';}).length);
+console.log(winners.filter( (x) => {return x[1] === 'p1';}).length);
+
