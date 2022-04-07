@@ -26,6 +26,7 @@ var lo = require('lodash');
 function longestRecurringCycle(d) {
     var cycles = lo.map(lo.range(2, d), (x) => {
         return recurringCycle(x).length;});
+
     return cycles.indexOf(lo.max(cycles)) + 2;
 }
 
@@ -38,12 +39,13 @@ function longestRecurringCycle(d) {
 
 /*
  * This is technically a bit off but it still worked in the end. It doesn't
- * count the a recurring cylcle, what it does is keep dividing and giving 
+ * count the a recurring cycle, what it does is keep dividing and giving 
  * terms in the fraction until it starts repeating. It just so happened that
  * the longest 1/[d] fraction also happened to be the longest recurring cycle.
  * 
  * It is trivially easy to modify the fucntion a bit to make it return only 
- * recurring cycles instead of doing division like it does now.
+ * recurring cycles instead of doing division like it does now, I'm not going
+ * to do it tho.
  *
  */
 

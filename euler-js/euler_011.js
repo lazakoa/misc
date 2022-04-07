@@ -101,6 +101,7 @@ function combinations(array, n) {
     recur('', array, n);
     
     var output = [];
+
     for (let e of temp) {
         output.push(e.slice(1).split(',').map(Number));
     }
