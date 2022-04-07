@@ -115,7 +115,7 @@ function permutations(array, n) {
 
 // skips the some elements in the horizontal direction in a band on top and
 // on the bottom, will be added if needed to finish the problem. Also skips 
-// the vertical bands on the left and right sides.
+// the vertical bands on the left and right sides, in the vertical direction.
 
 function traverse(grid, n) {
     var max = 0;
