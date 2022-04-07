@@ -28,26 +28,81 @@ prime value family.
 
 var lo = require('lodash');
 var wu = require('wu');
-var nu = require('numbers');
 var G = require('generatorics');
+var pri = require('primality');
 
-comb = [];
-for (var comb of G.combination(lo.range(6), 2)) {
-  console.log(comb);
+/* Generate all primes that have n digits. Use this as our cache.
+ */
+
+// sieve is too fucking slow, just do pri.primality
+function nDigitPrimes(n) {
+    return lo.filter(lo.range(10**(n-1), (10**(n)) - 1),
+        pri.primality);
 }
 
-function digitSwap(p) {
-    /* Takes a integer p, computes all the possible positions where digits
-     * can be replaces, and creates all the possible numbers that can be 
-     * formed by pushing 0 and 9 to these positions.
-     */
-    length = lo.range(String(p).length);
-    positions = G.combination(length, 2);
+/* Make a generator that returns digit positions.
+ * swap 1, swap 2, swap 3, ect, until swap n - 1
+ * Given a digit position stick all possible numbers in it 0 to 9. At least 
+ * 8 of these should be prime.
+ */
 
+// wanted to use a generator for this :( But below is much simpler
+function generatePositions(n) {
+    var temp = [];
+    for (var i = 1; i < n ; i++) {
+        for (var pos of positions(n, i)) {
+            temp.push(pos.slice()); // prevents mutation 
+        }
+    }
+    return temp;
 }
 
-function pairSwap(l) {
+function positions(n, i) {
+    return G.combination(lo.range(0, n), i);
+}
 
+function generateFamily(number, positions) {
+    var family = []; 
+    for (var n of lo.range(0, 10)) {
+        var temp = String(number).split('');
+        for (var position of positions) {
+                temp[position] = String(n);
+        }
+        family.push(Number(temp.join('')));
+    }
+    return family;
+}
+
+function solve(n) {
+    // n is the number of primes in the family
+    var primes = new Set();
+    for (var i = 2;; i++) {
+        var ndigit = nDigitPrimes(i);
+        primes = primes.union(new Set(nDigitPrimes(i)));
+        var positions = generatePositions(i);
+        console.log(i);
+        for (var prime of ndigit) {
+            for (var pos of positions) {
+            var family = generateFamily(prime, pos);
+            }
+            var temp = lo.filter(family, (x) => primes.has(x));
+            if (temp.length === n) {
+                return lo.min(temp);
+            }
+        }
+    }
 }
 
 
+
+
+// why the fuck is this not a default method?
+Set.prototype.union = function(setB) {
+    var union = new Set(this);
+    for (var elem of setB) {
+        union.add(elem);
+    }
+    return union;
+}
+
+console.log(solve(6));

@@ -205,6 +205,7 @@ threekind = nkind([3]);
 fullhouse = nkind([3,2]);
 fourkind = nkind([4]);
 
+// small sanity tests
 p5s = ['5H', '5C', '5S', '7S', 'KD'];
 
 p8s = ['2C', '2S', '8S', '8D', 'TD'];
