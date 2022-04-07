@@ -189,16 +189,14 @@ highcard = nkind([1]);
 onepair = nkind([2]);
 
 function twopair(hand) {
-    total = String(score(hand)).split('');
-    index = total.indexOf('2');
-    if (index === -1) {
-        return false;
-    }
-    index2 = total.lastIndexOf('2');
-    if (index2 !== index) {
-        return true;
-    }
-    else {
+    var temp = invert(count(hand));
+    if (2 in temp) {
+        if (temp[2].length == 2) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
         return false;
     }
 }
