@@ -30,35 +30,28 @@ value of x is obtained.
 
 
 """
-    * For each D <= 1000, find the minimal solution.
-        * Find the minimal solution?
-        * Find all y s.t sqrt(1 + D*y**2) is an integer
-        * First y found this way will be our minimal solution
-    * Find the smallest x from the minimal solutions and give the corresponding
-    D.
-    
     * Naive method is too slow.
+    * Did some reading, this is a Pell-Fermat equation. Lenstra's name shows
+    up all over the place ...
+    * Solving it using a continued fraction
 """
 
-from gmpy2 import iroot
+from general import contFrac, rootPeriod
 from functools import reduce
 
-def findSol(D):
-    counter = 1
-    while True:
-        temp = 1 + D*(counter**2)
-        sol = iroot(temp, 2)
-        if counter % 10000000 == 0:
-            print(counter)
-        if sol[-1] == True:
-            return (int(sol[0]), counter)
-        else:
-            counter += 1
-
 squares = set(map(lambda x: x**2, range(1, 35)))
+Ds = filter(lambda x: x not in squares, range(2, 1001))
 
-print(reduce(lambda x,y: x if x[1][0] > y[1][0] else y ,map(lambda x: (x, findSol(x)),
-    filter(lambda x: x not in squares, range(2, 70))))[0])
+def fundasol(D):
+    terms = rootPeriod(D)
+    k = len(terms[1:])
+    if k % 2 == 0:
+        ans = contFrac(terms[:-1])
+    else:
+        ans = contFrac(terms + terms[1:-1])
+    return (ans.numerator, ans.denominator)
 
+print(reduce(lambda x,y: x if x[1] > y[1] else y,
+    map(lambda x: (x,) + fundasol(x), Ds))[0])
 
 

@@ -79,7 +79,6 @@ How many continued fractions for N 10000 have an odd period?
 """
 
 from itertools import takewhile, count
-from copy import deepcopy
 from fractions import Fraction
 
 mastercache = set(takewhile(lambda x: x**2 < 10000, count(1)))
@@ -135,9 +134,10 @@ def tee(f, n):
     mirror = 0
     flag = True
 
+    """
     if counter // f[1] != 0 and (counter % f[1])**2 < n:
         temp.append((counter // f[1], counter % f[1]))
-
+    """
     while flag:
         counter += f[1]
         mirror -= f[1]
