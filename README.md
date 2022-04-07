@@ -8,7 +8,7 @@ Some potential sources of problems in the future:
 * r/dailyprogrammer (mature collection)
 * SPOJ (lots of stuff)
 * topcoder (decent tutorials)
-* Kaggle (data sciency stuff)
+* Programming Praxis
 
 1. Advent of Code
 2. Programming Praxis (scheme friendly)
@@ -19,9 +19,6 @@ Some potential sources of problems in the future:
 7. Flare-On
 8. http://eudyptula-challenge.org/
 9. https://microcorruption.com
-
-Looking for:
-* problem sets & challenges for neural nets
 
 Sources will be added as I find them.
 
