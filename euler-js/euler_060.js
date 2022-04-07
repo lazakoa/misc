@@ -63,11 +63,96 @@ concatenate to produce another prime.
  * 5. Do a tree search to find all possible solutions of length k (k is
  * a configurable parameter).
  * 6. If there are no answers set p to be higher and run this again. 
+ *
+ * Very similar to one of the later questions I had solved in python. (one of
+ * the 60's)
  * 
  * If the above doesn't work then give up and think up a new approach.
  */
 
 var pri = require('primality');
 var lo = require('lodash');
+var G = require('generatorics');
+var wu = require('wu');
 
+function primes(n) {
+    /* generates all primes p < n
+    */
+    return lo.filter(lo.range(0, n + 1), pri.primality); 
+}
 
+function search(n, k) {
+    /* n is the bound for the set of primes we are using
+     * k denotes the size of the set which is remarkable.
+     * function finds all possible sets of size k given all primes up to n.
+     */
+    var pset = primes(n);
+    var pairs = remarkablePairs(pset);
+
+    var solutions = [];
+    // Makes a whole bunch of redundant copies of solutions, still fast enough
+    // to compute answer in a few seconds. Not optimizing this, looks like a
+    // pain.
+    function recur(l) {
+        if (l.length === k) {
+            //
+            solutions.push(l);
+            return l.slice(0,-1);
+        } else if (l.length === 0) {
+            for (var pair in pairs) {
+                recur([Number(pair)]); // starts with length 1
+            }
+        } else {
+            /* Loop over all keys in pairs
+             */
+            var temp = new Set(l);
+            for (var elem of pairs[l.slice(-1)]) {
+                // if the elem is already in the list, skip it
+                if (!(temp.has(elem))) {
+                    // check if elem occurs in every 
+                    if (l.every((x) => {
+                        return pairs[x].has(elem);})) {
+                        recur(l.concat(elem));
+                    }
+                }
+            }
+            return l.slice(0,-1);
+        }
+        return 1;
+    }
+    recur([]);
+    return solutions;
+}
+
+/* LOL. Just realized I have a graph below.
+ */
+
+function remarkablePairs(set) {
+    /* Pairs grow O(n^2) also the cost of the primality check grows with n.
+     * I assume the primality check is naive and the growth on it is O(n^.5).
+     */
+    var temp = wu(G.combination(set, 2)).filter((x) => {
+        return remarkable(x[0], x[1]);});
+    var final = {};
+    for (var pair of temp) {
+        if (pair[0] in final) {
+            final[pair[0]].add(pair[1]);
+        } else {
+            final[pair[0]] = new Set([pair[1]]);
+        }
+        if (pair[1] in final) {
+            final[pair[1]].add(pair[0]);
+        } else {
+            final[pair[1]] = new Set([pair[0]]);
+        }
+    }
+    return final;
+}
+
+function remarkable(a,b) {
+    var n1 = Number(String(a) + String(b));
+    var n2 = Number(String(b) + String(a));
+    return pri.primality(n1) && pri.primality(n2);
+}
+
+console.log(lo.sum(search(9000, 5)[0]));
