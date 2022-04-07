@@ -15,4 +15,26 @@ irrational square
 roots.
 """
 
+"""
+Algorithm for digit by digit calculation - courtesy of wikipedia.
+
+N = (a1*(10**(n-1)) + a2*(10**(n-2)) + ... + a'n-1'*10 + an)**2
+
+ai element of {0,1,2,...,9}
+
+P'm-1' = Summation (i=1 to m-1, ai * 10**(n-i))
+Y'm' = (2P'm-1' + am*10**(n-m))*am*10**(n-m)
+
+Xm = X'm-1' - Ym , Xm >= 0 for all 1<=m<=n & X0 = N when Xn = 0 the
+exact square root has been found if not then the sum of ai's gives a 
+suitable approximation of the square root with Xn being the approx
+error.
+"""
+
+def digitByDigitSqrt(x, n):
+    """
+    Computes the square root of x to n decimal digits.
+    """
+
+    for i in range(n+1)
 
