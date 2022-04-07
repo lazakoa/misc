@@ -16,14 +16,7 @@ necessarily adjacent digits) with the same digit, is part of an eight
 prime value family.
 */
 
-/* 
-    * Generate a cache of primes (below 1 million)
-    * Loop over all of the primes in the cache
-        * Do a swap of pairs of digits in the number with 00 to 99
-            * need to generate positions in the number using a combination
-    * If cache is exhausted, generate a cache of primes below 10 million and
-    repeat. Answer is first prime to satisfy the property of having a eight
-    prime value family.
+/* Naive attemp too slow also incorrect somewhere.
 */
 
 var lo = require('lodash');
@@ -32,6 +25,7 @@ var G = require('generatorics');
 var pri = require('primality');
 
 /* Generate all primes that have n digits. Use this as our cache.
+ * For every 5 digit number --> slice out digits randomly.
  */
 
 // sieve is too fucking slow, just do pri.primality
@@ -40,6 +34,8 @@ function nDigitPrimes(n) {
         pri.primality);
 }
 
+//var cache = lo.filter(lo.range(10**8), pri.primality);
+
 /* Make a generator that returns digit positions.
  * swap 1, swap 2, swap 3, ect, until swap n - 1
  * Given a digit position stick all possible numbers in it 0 to 9. At least 
@@ -47,6 +43,7 @@ function nDigitPrimes(n) {
  */
 
 // wanted to use a generator for this :( But below is much simpler
+
 function generatePositions(n) {
     var temp = [];
     for (var i = 1; i < n ; i++) {
@@ -61,40 +58,47 @@ function positions(n, i) {
     return G.combination(lo.range(0, n), i);
 }
 
-function generateFamily(number, positions) {
+function generateFamily(number, position) {
     var family = []; 
     for (var n of lo.range(0, 10)) {
         var temp = String(number).split('');
-        for (var position of positions) {
-                temp[position] = String(n);
+        for (var pos of position) {
+                temp[pos] = String(n);
         }
-        family.push(Number(temp.join('')));
+        // 0 at the front truncates the number, do we want this?
+        temp = Number(temp.join(''));
+        if (String(temp).length === String(number).length) {
+            family.push(temp);
+        }
     }
     return family;
 }
 
+
+// For each prime, calculate all the possible positions, and for each possible
+// position calculate all the possible digit entries.
+// Primes * (combinations made up of 0,...,n-1 from 1 to n-1 items) * 10
+// For n = 5 there are 8363 primes * 30 * 10 * primality check(constant)
+// For n = 6 there are 68906 primes * 62 * 10
+// For n = 7 there are 586081 primes * 126 * 10
+
 function solve(n) {
     // n is the number of primes in the family
-    var primes = new Set();
+    var cache = new Set(nDigitPrimes(1)); // cache
     for (var i = 2;; i++) {
-        var ndigit = nDigitPrimes(i);
-        primes = primes.union(new Set(nDigitPrimes(i)));
+        var digits = nDigitPrimes(i);
+        cache = new Set(digits);
         var positions = generatePositions(i);
-        console.log(i);
-        for (var prime of ndigit) {
-            for (var pos of positions) {
-            var family = generateFamily(prime, pos);
-            }
-            var temp = lo.filter(family, (x) => primes.has(x));
-            if (temp.length === n) {
-                return lo.min(temp);
+        for (digit of digits) {
+            for (var position of positions) {
+                var temp = generateFamily(digit, position);
+                if (lo.filter(temp, x => cache.has(x)).length === n) {
+                    return temp;
+                }
             }
         }
     }
 }
-
-
-
 
 // why the fuck is this not a default method?
 Set.prototype.union = function(setB) {
@@ -105,4 +109,5 @@ Set.prototype.union = function(setB) {
     return union;
 }
 
-console.log(solve(6));
+// works
+console.log(lo.min(lo.filter(solve(8), pri.primality)));
